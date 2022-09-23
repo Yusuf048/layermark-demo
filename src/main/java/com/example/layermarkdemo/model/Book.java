@@ -21,16 +21,22 @@ public class Book {
     @Column(name = "release_date", columnDefinition = "DATE")
     private LocalDate releaseDate;
 
+    @Column(name = "img")
+    private String imgUrl;
+
+    private String genre;
+
     // Default constructor
     public Book() {
 
     }
 
     // Constructor with fields
-    public Book(String bookName, String author, LocalDate releaseDate) {
+    public Book(String bookName, String author, LocalDate releaseDate, String imgUrl, String genre) {
         this.bookName = bookName;
         this.author = author;
         this.releaseDate = releaseDate;
+        this.imgUrl = imgUrl;
     }
 
     // Getters and Setters
@@ -64,5 +70,21 @@ public class Book {
 
     public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 }
