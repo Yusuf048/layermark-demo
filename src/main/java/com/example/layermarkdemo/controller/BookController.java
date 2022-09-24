@@ -26,7 +26,7 @@ public class BookController {
 
     @GetMapping("/{genre}/{start}/{end}")
     public List<Book> getBooksByGenre(@PathVariable("genre") String genre, @PathVariable("start")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start, @PathVariable("end")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-        String[] genres = {"Action and Adventure", "Fantasy", "Historical", "Science Fiction", "Thriller", "Classics", "Historical Fiction", "Mystery", "Romance"};
+        String[] genres = {"Action and Adventure", "Fantasy", "Historical", "Science Fiction", "Thriller", "Classics", "Historical Fiction", "Mystery", "Romance", "Biography"};
         List<String> genre_list = Arrays.asList(genres);
         // HashMap<String, List<Book>> booksByGenre = new HashMap<>();
 
@@ -65,17 +65,77 @@ public class BookController {
         }*/
     }
 
-    @GetMapping("/{genre}/{start}/{end}/{author}")
-    public List<Book> getBooksByGenreFiltered(@PathVariable("genre") String genre, @PathVariable("author") String author){
+    @GetMapping("/{genre}/{start}/{end}/{author}/{bookName}")
+    public List<Book> getBooksByGenreFiltered(@PathVariable("genre") String genre,@PathVariable("start")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start, @PathVariable("end")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end, @PathVariable("author") String author, @PathVariable("bookName") String bookName){
         String[] genres = {"Action and Adventure", "Fantasy", "Historical", "Science Fiction", "Thriller", "Classics", "Historical Fiction", "Mystery", "Romance"};
         List<String> genre_list = Arrays.asList(genres);
 
         if(genre_list.contains(genre)){
-            if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByAuthor(author).isPresent()){
+            if(author.equals("Author Name") && bookName.equals("Book Name")){
+                if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateBetween(start, end).isPresent()){
+                    List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
+                    List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
+                    List<Book> combinedBooks = new ArrayList<Book>();
+
+                    for (Book t : booksOfGenre) {
+                        if(booksOfDates.contains(t)) {
+                            combinedBooks.add(t);
+                        }
+                    }
+                    return combinedBooks;
+                }
+            } else if (author.equals("Author Name")){
+                if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateBetween(start, end).isPresent()){
+                    List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
+                    List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
+                    List<Book> combinedBooks = new ArrayList<Book>();
+
+                    for (Book t : booksOfGenre) {
+                        if(t.getBookName().equals(bookName)){
+                            if(booksOfDates.contains(t)) {
+                                combinedBooks.add(t);
+                            }
+                        }
+                    }
+                    return combinedBooks;
+                }
+            } else if (bookName.equals("Book Name")){
+                if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateBetween(start, end).isPresent()){
+                    List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
+                    List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
+                    List<Book> combinedBooks = new ArrayList<Book>();
+
+                    for (Book t : booksOfGenre) {
+                        if(t.getAuthor().equals(author)){
+                            if(booksOfDates.contains(t)) {
+                                combinedBooks.add(t);
+                            }
+                        }
+                    }
+                    return combinedBooks;
+                }
+            } else {
+                if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateBetween(start, end).isPresent()){
+                    List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
+                    List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
+                    List<Book> combinedBooks = new ArrayList<Book>();
+
+                    for (Book t : booksOfGenre) {
+                        if(t.getAuthor().equals(author) && t.getBookName().equals(bookName)){
+                            if(booksOfDates.contains(t)) {
+                                combinedBooks.add(t);
+                            }
+                        }
+                    }
+                    return combinedBooks;
+                }
+            }
+
+            /*if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByAuthor(author).isPresent()){
                 return this.bookRepository.findByGenre(genre).get();
             } else {
                 return Collections.emptyList();
-            }
+            }*/
         } else {
             try {
                 genre_list.contains(genre);
