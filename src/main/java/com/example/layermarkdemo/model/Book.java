@@ -18,6 +18,7 @@ public class Book {
     @Column(name = "author")
     private String author;
 
+    // LocalDate format: yyyy-MM-dd
     @Column(name = "release_date", columnDefinition = "DATE")
     private LocalDate releaseDate;
 
