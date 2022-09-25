@@ -3,13 +3,11 @@ package com.example.layermarkdemo.controller;
 import com.example.layermarkdemo.model.Book;
 import com.example.layermarkdemo.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("book")
@@ -24,15 +22,14 @@ public class BookController {
         return this.bookRepository.findAll();
     }
 
+    // Get all books by genre
     @GetMapping("/{genre}/{start}/{end}")
     public List<Book> getBooksByGenre(@PathVariable("genre") String genre, @PathVariable("start")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start, @PathVariable("end")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
         String[] genres = {"Action and Adventure", "Fantasy", "Historical", "Science Fiction", "Thriller", "Classics", "Historical Fiction", "Mystery", "Romance", "Biography"};
         List<String> genre_list = Arrays.asList(genres);
-        // HashMap<String, List<Book>> booksByGenre = new HashMap<>();
 
         if(genre_list.contains(genre)){
             if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateAfter(start).isPresent() && bookRepository.findByReleaseDateBefore(end).isPresent()){
-                System.out.println("------------I AM HERE------------------");
                 List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
                 List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
                 List<Book> combinedBooks = new ArrayList<Book>();
@@ -54,24 +51,18 @@ public class BookController {
             }
         }
         return Collections.emptyList();
-
-        /*for (String genre
-                : genres
-             ) {
-            if (bookRepository.findByGenre(genre).isPresent()){
-                booksByGenre.put(genre, bookRepository.findByGenre(genre).get());
-            }
-
-        }*/
     }
 
+    // Get filtered books by genre
     @GetMapping("/{genre}/{start}/{end}/{author}/{bookName}")
     public List<Book> getBooksByGenreFiltered(@PathVariable("genre") String genre,@PathVariable("start")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start, @PathVariable("end")@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end, @PathVariable("author") String author, @PathVariable("bookName") String bookName){
         String[] genres = {"Action and Adventure", "Fantasy", "Historical", "Science Fiction", "Thriller", "Classics", "Historical Fiction", "Mystery", "Romance"};
         List<String> genre_list = Arrays.asList(genres);
 
+        // Search if genre exists
         if(genre_list.contains(genre)){
             if(author.equals("Author Name") && bookName.equals("Book Name")){
+                // Find books by genre and release date then combine the lists of books
                 if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByReleaseDateBetween(start, end).isPresent()){
                     List<Book> booksOfGenre =  this.bookRepository.findByGenre(genre).get();
                     List<Book> booksOfDates =  this.bookRepository.findByReleaseDateBetween(start, end).get();
@@ -130,12 +121,6 @@ public class BookController {
                     return combinedBooks;
                 }
             }
-
-            /*if (bookRepository.findByGenre(genre).isPresent() && bookRepository.findByAuthor(author).isPresent()){
-                return this.bookRepository.findByGenre(genre).get();
-            } else {
-                return Collections.emptyList();
-            }*/
         } else {
             try {
                 genre_list.contains(genre);
@@ -146,6 +131,7 @@ public class BookController {
         return Collections.emptyList();
     }
 
+    // Add Book
     @PostMapping("")
     public Book addBook(@RequestBody Book book){
         if (book.getImgUrl() == null) {
@@ -154,38 +140,34 @@ public class BookController {
         return this.bookRepository.save(book);
     }
 
+    // Edit Book
     @PutMapping("/{book_id}")
     public Book updateBook(@PathVariable("book_id") Long book_id, @RequestBody Book book){
         Book foundBook = bookRepository.findById(book_id).orElse(null);
-        if (foundBook == null)
-        {
-            // Throw exception
-        }
-        if (book.getBookName() != null)
+        if (!("".equals(book.getBookName())))
         {
             foundBook.setBookName(book.getBookName());
         }
-        if (book.getImgUrl() != null) {
+        if (!("".equals(book.getImgUrl()))) {
             foundBook.setImgUrl(book.getImgUrl());
         }
-        if (book.getAuthor() != null) {
+        if (!("".equals(book.getAuthor()))) {
             foundBook.setAuthor(book.getAuthor());
         }
-        if (book.getReleaseDate() != null) {
+        if (!("".equals(book.getReleaseDate()))) {
             foundBook.setReleaseDate(book.getReleaseDate());
         }
-        // TODO
+        if (!("".equals(book.getGenre()))) {
+            foundBook.setGenre(book.getGenre());
+        }
         return this.bookRepository.save(foundBook);
     }
 
-    /*@DeleteMapping("{book_id}")
-    public List<Book> deleteBook(){
-        return this.bookRepository.save();
-    }*/
-
-    /*@GetMapping("books/{author}")
-    public List<Book> getBooks(){
+    // Delete Book
+    @DeleteMapping("/{book_id}")
+    public List<Book> deleteBook(@PathVariable("book_id") Long book_id){
+        this.bookRepository.deleteById(book_id);
         return this.bookRepository.findAll();
-    }*/
+    }
 
 }
