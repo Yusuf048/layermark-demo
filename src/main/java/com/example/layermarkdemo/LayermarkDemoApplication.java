@@ -18,16 +18,5 @@ public class LayermarkDemoApplication{
     public static void main(String[] args) {
         SpringApplication.run(LayermarkDemoApplication.class, args);
     }
-
-    /*@Autowired
-    private BookRepository bookRepository;*/
-
-    /*@Override
-    public void run(String... args) throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-        LocalDate dt = LocalDate.parse("2011-03-11");
-        this.bookRepository.save(new Book("Physics of the Future", "Michio Kaku", LocalDate.parse("2011-03-11")));
-        
-    }*/
 }
 
