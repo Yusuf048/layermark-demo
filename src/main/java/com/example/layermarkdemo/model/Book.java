@@ -2,7 +2,6 @@ package com.example.layermarkdemo.model;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "books")
